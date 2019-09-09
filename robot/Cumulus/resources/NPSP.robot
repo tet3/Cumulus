@@ -12,12 +12,12 @@ ${task2}     Make a Phone Call2
 
 *** Keywords ***
 
- Capture Screenshot and Delete Records and Close Browser
+Capture Screenshot and Delete Records and Close Browser
     Capture Page Screenshot
     Close Browser
     Delete Session Records
     
- API Create Contact
+API Create Contact
     [Arguments]      &{fields}
     ${first_name} =  Generate Random String
     ${last_name} =   Generate Random String
@@ -110,10 +110,12 @@ API Create Relationship
     # ...               &{fields}
    
 API Create GAU
+    [Arguments]      &{fields}
     ${name} =   Generate Random String
     ${ns} =    Get Npsp Namespace Prefix
     ${gau_id} =  Salesforce Insert  ${ns}General_Accounting_Unit__c
     ...               Name=${name}
+    ...               &{fields} 
     &{gau} =     Salesforce Get  ${ns}General_Accounting_Unit__c  ${gau_id}
     [return]         &{gau}  
 
@@ -128,10 +130,9 @@ API Create DataImportBatch
     [return]         &{batch}
     
 API Create DataImport   
-    [Arguments]     ${batch}     &{fields}
+    [Arguments]      &{fields}
     ${ns} =  Get NPSP Namespace Prefix
     ${dataimport_id} =  Salesforce Insert  ${ns}DataImport__c
-    ...                  ${ns}NPSP_Data_Import_Batch__c=${batch}
     ...                  &{fields}
     &{data_import} =     Salesforce Get  ${ns}DataImport__c  ${dataimport_id}
     [return]         &{data_import} 
@@ -304,7 +305,7 @@ Create Level
     Set Focus To Element   xpath: //input[@value='Save']
     Click Button  Save
     Unselect Frame
-    Wait For Locator  breadcrumb  Level
+    Wait For Locator  spl-breadcrumb  Level
     ${level_id} =            Get Current Record Id
     Store Session Record  Level__c  ${level_id}
     [Return]    ${level_id}  ${level_name}
