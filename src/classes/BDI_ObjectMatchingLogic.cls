@@ -38,18 +38,17 @@
 
 public with sharing virtual class BDI_ObjectMatchingLogic {
 
-    public virtual BDI_ObjectWrapper[] matchObjects(BDI_ObjectWrapper[] objWraps, BDI_DataImportService dataImportService) {
-        if (objWraps != null && objWraps.size() > 0 && objWraps[0].fieldMappings != null) {
+    public virtual BDI_ObjectWrapper[] matchObjects(Data_Import_Object_Mapping__mdt objMapping, 
+                                                    Data_Import_Field_Mapping__mdt[] fieldMappings, 
+                                                    BDI_ObjectWrapper[] objWraps, 
+                                                    BDI_DataImportService dataImportService) {
+        if (objWraps != null && objWraps.size() > 0 && fieldMappings != null && objMapping != null) {
 
             Boolean shouldMatch = false;
 
-            //Note it is assumed that all object wraps passed into this class will be using the same
-            //field mappings.
-            Data_Import_Field_Mapping__mdt[] fieldMappings = objWraps[0].fieldMappings;
-
-            String targetObject = objWraps[0].objMapping.Object_API_Name__c;
-            String importedRecordStatusField = objWraps[0].objMapping.Imported_Record_Status_Field_Name__c;
-            String importedRecordField = objWraps[0].objMapping.Imported_Record_Field_Name__c;
+            String targetObject = objMapping.Object_API_Name__c;
+            String importedRecordStatusField = objMapping.Imported_Record_Status_Field_Name__c;
+            String importedRecordField = objMapping.Imported_Record_Field_Name__c;
 
             String matchSourceField;
             String matchTargetField;

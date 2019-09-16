@@ -161,7 +161,12 @@ public with sharing class BDI_AdditionalObjectService {
                     }
 
                     if (objWrapsForMatching.size() > 0){
-                        objMatchingLogic.matchObjects(objWrapsForMatching,dataImportService);
+                        
+                        objMatchingLogic.matchObjects(objWrapsForMatching[0].objMapping,
+                                                        objWrapsForMatching[0].fieldMappings,
+                                                        objWrapsForMatching,
+                                                        dataImportService);
+
                         for (BDI_ObjectWrapper objWrap : objWrapsForMatching) {
                             //If the data import row did not trigger an error that resulted in Failure then proceed
                             if (objWrap.dataImport.Status__c != System.label.bdiFailed) {
