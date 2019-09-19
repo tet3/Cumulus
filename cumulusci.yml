@@ -538,7 +538,7 @@ flows:
     test_performance:
         steps:
             1:
-                flow: test_performance_CO
+                flow: test_performance_scratch
 
     beta_dependencies:
         steps:
