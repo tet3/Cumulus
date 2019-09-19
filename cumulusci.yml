@@ -166,7 +166,7 @@ tasks:
         options:
             suites: robot/Cumulus/perftests/
             outputdir: robot/Cumulus/results
-            vars: field_mapping_method:Data Import Field Mapping,count:12000
+            vars: field_mapping_method:Data Import Field Mapping,cleanup_first:none,count:12000
 
     platformencryption_deploy_permset:
         class_path: cumulusci.tasks.salesforce.Deploy
@@ -527,7 +527,7 @@ flows:
                     vars: field_mapping_method:Help Text,cleanup_first:none
                     # don't cleanup in this context because its slow
 
-    test_performance_CO:
+    test_performance_scratch:
         description: 'Creates a BGE-BDI test org and runs a CO performance test'
         steps:
             1:
