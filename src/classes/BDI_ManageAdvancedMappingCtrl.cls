@@ -489,12 +489,17 @@ public class BDI_ManageAdvancedMappingCtrl {
         @AuraEnabled public Boolean Is_Deleted;
         @AuraEnabled public String Source_Field_Display_Type_Label;
         @AuraEnabled public String Target_Field_Display_Type_Label;
+        @AuraEnabled public String[] Invalid_Fields = new String[]{};
 
         public DataImportFieldMappingWrapper(Data_Import_Field_Mapping__mdt fieldMapping) {
             String dataImport = SobjectType.DataImport__c.Name;
             String objectAPIName = fieldMapping.Target_Object_Mapping__r.Object_API_Name__c;
             String sourceFieldAPIName = fieldMapping.Source_Field_API_Name__c;
             String targetFieldAPIName = fieldMapping.Target_Field_API_Name__c;
+            Map<String, Schema.DescribeFieldResult> allFieldsMap =
+                UTIL_Describe.getAllFieldsDescribe(objectAPIName);
+            Map<String, Schema.DescribeFieldResult> allDiFieldsMap =
+                UTIL_Describe.getAllFieldsDescribe(dataImport);
 
             if (UTIL_Namespace.shouldAlignNamespace) {
                 objectAPIName =
@@ -506,26 +511,32 @@ public class BDI_ManageAdvancedMappingCtrl {
                     UTIL_Namespace.alignSchemaNSWithEnvironment(fieldMapping.Target_Field_API_Name__c);
             }
 
-            Schema.DescribeFieldResult sourceFieldDescribe = UTIL_Describe.getFieldDescribe(
-                dataImport,
-                sourceFieldAPIName);
-
-            Schema.DescribeFieldResult targetFieldDescribe = UTIL_Describe.getFieldDescribe(
-                objectAPIName,
-                targetFieldAPIName);
+            Schema.DescribeFieldResult sourceFieldDescribe =
+                allDiFieldsMap.get(sourceFieldAPIName.toLowerCase());
+            Schema.DescribeFieldResult targetFieldDescribe =
+                allFieldsMap.get(targetFieldAPIName.toLowerCase());
 
             this.DeveloperName = fieldMapping.DeveloperName;
             this.MasterLabel = fieldMapping.MasterLabel;
-            this.Label =fieldMapping.MasterLabel;
-            this.Source_Field_Label = sourceFieldDescribe.label;
-            this.Source_Field_API_Name = fieldMapping.Source_Field_API_Name__c;
-            this.Source_Field_Data_Type = String.valueOf(sourceFieldDescribe.type);
-            this.Source_Field_Display_Type_Label = LABELS_BY_DISPLAY_TYPE.get(this.Source_Field_Data_Type);
+            this.Label = fieldMapping.MasterLabel;
 
-            this.Target_Field_Label = targetFieldDescribe.label;
+            this.Source_Field_API_Name = fieldMapping.Source_Field_API_Name__c;
+            if (sourceFieldDescribe == null) {
+                this.Invalid_Fields.add(sourceFieldAPIName);
+            } else {
+                this.Source_Field_Label = sourceFieldDescribe.label;
+                this.Source_Field_Data_Type = String.valueOf(sourceFieldDescribe.type);
+                this.Source_Field_Display_Type_Label = LABELS_BY_DISPLAY_TYPE.get(this.Source_Field_Data_Type);
+            }
+
             this.Target_Field_API_Name = fieldMapping.Target_Field_API_Name__c;
-            this.Target_Field_Data_Type = String.valueOf(targetFieldDescribe.type);
-            this.Target_Field_Display_Type_Label = LABELS_BY_DISPLAY_TYPE.get(this.Target_Field_Data_Type);
+            if (targetFieldDescribe == null) {
+                this.Invalid_Fields.add(targetFieldAPIName);
+            } else {
+                this.Target_Field_Label = targetFieldDescribe.label;
+                this.Target_Field_Data_Type = String.valueOf(targetFieldDescribe.type);
+                this.Target_Field_Display_Type_Label = LABELS_BY_DISPLAY_TYPE.get(this.Target_Field_Data_Type);
+            }
 
             this.Maps_To_Icon = UTILITY_FORWARD_SLDS_ICON;
 

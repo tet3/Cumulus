@@ -160,6 +160,7 @@ export default class bdiFieldMappings extends LightningElement {
                 });
 
             if (this.fieldMappings && this.fieldMappings.length > 0) {
+                this.checkForInvalidFieldsInFieldMappings(this.fieldMappings);
                 this.fieldMappings = this.sortData(
                     this.fieldMappings,
                     'Source_Field_Label',
@@ -170,6 +171,7 @@ export default class bdiFieldMappings extends LightningElement {
 
         } catch(error) {
             this.handleError(error);
+            this.isLoading = false;
         }
     }
 
@@ -333,6 +335,23 @@ export default class bdiFieldMappings extends LightningElement {
         this.sortedBy = event.detail.fieldName;
         this.sortedDirection = event.detail.sortDirection;
         this.fieldMappings = this.sortData(this.fieldMappings, this.sortedBy, this.sortedDirection);
+    }
+
+    checkForInvalidFieldsInFieldMappings(fieldMappings) {
+        let invalidFields = [];
+
+        fieldMappings.map((fieldMapping) => {
+            if (fieldMapping.Invalid_Fields) { invalidFields.push(...fieldMapping.Invalid_Fields) }
+        });
+
+        if (invalidFields.length > 0) {
+            this.showToast(
+                'Invalid Fields',
+                `We found invalid fields in one or more of your mappings. Invalid mappings will be missing a label and data type in the table below. ${invalidFields}`,
+                'warning',
+                'sticky'
+            );
+        }
     }
 
     /*******************************************************************************
